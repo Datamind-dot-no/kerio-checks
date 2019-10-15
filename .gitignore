@@ -1,0 +1,22 @@
+# Binaries for programs and plugins
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+
+# Test binary, build with `go test -c`
+*.test
+
+# Output of the go coverage tool, specifically when used with LiteIDE
+*.out
+
+# General rubbish
+.DS_Store
+
+# Binaries for main executable
+kerio_checks
+
+# Do not publish out own test config to Git
+TestRoot/*
+kerio-checks-config.json
