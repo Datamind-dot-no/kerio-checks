@@ -6,18 +6,18 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/datamind-dot-no/kerio-checks/config"
-
 	"github.com/datamind-dot-no/kerio-checks/app/notifications"
-
+	"github.com/datamind-dot-no/kerio-checks/config"
 	"github.com/karrick/godirwalk"
 )
 
+// Qchk uses types defined in config and notification packages
 type Qchk struct {
 	kerioChkConf  *config.Config
 	notifications *notifications.Notifications
 }
 
+// New instantiate and init
 func New(c *config.Config, n *notifications.Notifications) *Qchk {
 	return &Qchk{
 		kerioChkConf:  c,
@@ -25,6 +25,7 @@ func New(c *config.Config, n *notifications.Notifications) *Qchk {
 	}
 }
 
+// CheckQ counts the .eml files in the Kerio queue
 func (q *Qchk) CheckQ() error {
 	// use faster implementation for counting files as recommended at https://boyter.org/2018/03/quick-comparison-go-file-walk-implementations/
 	count := 0
@@ -38,7 +39,7 @@ func (q *Qchk) CheckQ() error {
 				count++
 
 				// debug statement:
-				//fmt.Printf("%s %s\n", de.ModeType(), osPathname)
+				// fmt.Printf("%s %s\n", de.ModeType(), osPathname)
 			}
 
 			return nil

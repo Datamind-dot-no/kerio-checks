@@ -8,8 +8,23 @@ import (
 
 // Config represent the application configuration
 type Config struct {
+	ServerName         string `mapstructure:"server_name"`
+	KerioStorePath     string `mapstructure:"keriostore_path"`
+	Sender             string `mapstructure:"sender"`
+	Recipient          string `mapstructure:"recipient"`
+	SubjectT           string `mapstructure:"subject_t"`
+	HTMLBodyT          string `mapstructure:"html_body"`
+	TextBodyT          string `mapstructure:"text_body"`
+	CharSet            string `mapstructure:"char_set"`
+	QueuePath          string `mapstructure:"q_path"`
+	QueueWarnThreshold int    `mapstructure:"q_warn_threshold"`
+}
+
+/*
+// Sadly, it doesn't work when using json tags, must use mapstructure instead, and NOT have whitespace after - all hail https://github.com/spf13/viper/issues/498#issuecomment-410485531
+type Config struct {
 	ServerName         string `json:"server_name"`
-	KerioStorePath     string `json:"kerioStore_path"`
+	KerioStorePath     string `json:"keriostore_path"`
 	Sender             string `json:"sender"`
 	Recipient          string `json:"recipient"`
 	SubjectT           string `json:"subject_t"`
@@ -19,6 +34,7 @@ type Config struct {
 	QueuePath          string `json:"q_path"`
 	QueueWarnThreshold int    `json:"q_warn_threshold"`
 }
+*/
 
 // New Inits a new instance of config.
 func New() (*Config, error) {
@@ -45,8 +61,19 @@ func New() (*Config, error) {
 			return nil, fmt.Errorf("Fatal error config file: %s", err)
 		}
 	}
-	config := &Config{}
-	err = viper.Unmarshal(config)
+
+	var C Config
+	err = viper.Unmarshal(&C)
+	if err != nil {
+		fmt.Println("unable to decode into struct")
+		return &C, err
+	}
+
+	// debug statements
+	//fmt.Println("The Server configured is: " + C.ServerName)
+	//fmt.Println("The Kerio Store path configured is: " + C.KerioStorePath)
+	//fmt.Println("The queue warning threshold is now configured as: " + strconv.Itoa(C.QueueWarnThreshold))
+
 	// Config file found and successfully parsed and returns a instance of Config type
-	return config, nil
+	return &C, nil
 }
