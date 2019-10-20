@@ -2,11 +2,13 @@
   "server_name": "Kerio-TEST",
   "kerioStore_path": "/mnt/datastore01/kerio/mailserver/store/",
   "sender": "noreply-ses@aws.example.tld",
-  "recipient": "support-alert-crew@example.tld",
-  "subject_t": "Heads up - Kerio server {{servername}} queue length issue flagged!",
-  "html_body": "<h1>Dear Example support crew, please check Kerio server {{servername}},</h1> <p>The number of messages in the queue is now {{queuelength}}.</p>",
-  "text_body": "Dear Example support crew, please check Kerio server {{servername}}\r\n The number og messages in the queue is now {{queuelength}}.",
-  "char_set": "UTF-8",
-  "q_path": "queue/",
-  "q_warn_threshold": 10
+  "q_check": {
+    "recipient_list": "support-alert-crew@example.tld",
+    "subject_t": "Heads up - Kerio server {{servername}} queue length issue flagged!",
+    "html_body": "<h1>Dear Example support crew, please check Kerio server {{servername}},</h1> <p>The number of messages in the queue is now {{queuelength}}.</p>",
+    "text_body": "Dear Example support crew, please check Kerio server {{servername}}\r\n The number og messages in the queue is now {{queuelength}}.",
+    "char_set": "UTF-8",
+    "q_path": "queue/",
+    "q_warn_threshold": 10
+  }
 }
