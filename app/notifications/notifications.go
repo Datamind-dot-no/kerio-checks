@@ -13,10 +13,12 @@ import (
 	"github.com/aws/aws-sdk-go/service/ses"
 )
 
+// Notifications uses types defined in config package
 type Notifications struct {
 	kerioChkConf *config.Config
 }
 
+// New instantiate and init
 func New(conf *config.Config) *Notifications {
 	return &Notifications{
 		kerioChkConf: conf,
@@ -37,33 +39,41 @@ func (n *Notifications) SendNotification(QueueLength int) (*ses.SendEmailOutput,
 	svc := ses.New(sess)
 
 	// Replace the SES e-mail template data key placeholders with current values
-	theSubject := strings.Replace(n.kerioChkConf.SubjectT, "{{servername}}", n.kerioChkConf.ServerName, -1)
-	theHTMLBody := strings.Replace(n.kerioChkConf.HTMLBodyT, "{{servername}}", n.kerioChkConf.ServerName, -1)
+	theSubject := strings.Replace(n.kerioChkConf.QueueCheck.SubjectT, "{{servername}}", n.kerioChkConf.ServerName, -1)
+	theHTMLBody := strings.Replace(n.kerioChkConf.QueueCheck.HTMLBodyT, "{{servername}}", n.kerioChkConf.ServerName, -1)
 	theHTMLBody = strings.Replace(theHTMLBody, "{{queuelength}}", strconv.Itoa(QueueLength), -1)
-	theTextBody := strings.Replace(n.kerioChkConf.TextBodyT, "{{servername}}", n.kerioChkConf.ServerName, -1)
+	theTextBody := strings.Replace(n.kerioChkConf.QueueCheck.TextBodyT, "{{servername}}", n.kerioChkConf.ServerName, -1)
 	theTextBody = strings.Replace(theTextBody, "{{queuelength}}", strconv.Itoa(QueueLength), -1)
+
+	// debug statements
+	fmt.Printf("RecipientList: %v\n", n.kerioChkConf.QueueCheck.RecipientList)
+	toAddresses := strings.Join(n.kerioChkConf.QueueCheck.RecipientList, ",")
+	fmt.Printf("Getting ready to send notification to: %s\n", toAddresses)
 
 	// Assemble the email.
 	input := &ses.SendEmailInput{
 		Destination: &ses.Destination{
 			CcAddresses: []*string{},
-			ToAddresses: []*string{
-				aws.String(n.kerioChkConf.Recipient),
-			},
+			/*
+				ToAddresses: []*string{
+					aws.String(n.kerioChkConf.QueueCheck.Recipient),
+				},
+			*/
+			ToAddresses: aws.StringSlice(n.kerioChkConf.QueueCheck.RecipientList),
 		},
 		Message: &ses.Message{
 			Body: &ses.Body{
 				Html: &ses.Content{
-					Charset: aws.String(n.kerioChkConf.CharSet),
+					Charset: aws.String(n.kerioChkConf.QueueCheck.CharSet),
 					Data:    aws.String(theHTMLBody),
 				},
 				Text: &ses.Content{
-					Charset: aws.String(n.kerioChkConf.CharSet),
+					Charset: aws.String(n.kerioChkConf.QueueCheck.CharSet),
 					Data:    aws.String(theTextBody),
 				},
 			},
 			Subject: &ses.Content{
-				Charset: aws.String(n.kerioChkConf.CharSet),
+				Charset: aws.String(n.kerioChkConf.QueueCheck.CharSet),
 				Data:    aws.String(theSubject),
 			},
 		},
@@ -77,6 +87,7 @@ func (n *Notifications) SendNotification(QueueLength int) (*ses.SendEmailOutput,
 
 	// Display error messages if they occur.
 	if err != nil {
+		fmt.Println("Error sending e-mail")
 		if aerr, ok := err.(awserr.Error); ok {
 			switch aerr.Code() {
 			case ses.ErrCodeMessageRejected:
@@ -93,11 +104,9 @@ func (n *Notifications) SendNotification(QueueLength int) (*ses.SendEmailOutput,
 			// Message from an error.
 			return nil, fmt.Errorf(err.Error())
 		}
-
-		return nil, err
 	}
 
-	fmt.Println("Email Sent to address: " + n.kerioChkConf.Recipient)
+	fmt.Printf("Email Sent to address: %v", n.kerioChkConf.QueueCheck.RecipientList)
 	fmt.Println(result)
 	return result, nil
 }

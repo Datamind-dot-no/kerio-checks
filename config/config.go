@@ -8,16 +8,18 @@ import (
 
 // Config represent the application configuration
 type Config struct {
-	ServerName         string `mapstructure:"server_name"`
-	KerioStorePath     string `mapstructure:"keriostore_path"`
-	Sender             string `mapstructure:"sender"`
-	Recipient          string `mapstructure:"recipient"`
-	SubjectT           string `mapstructure:"subject_t"`
-	HTMLBodyT          string `mapstructure:"html_body"`
-	TextBodyT          string `mapstructure:"text_body"`
-	CharSet            string `mapstructure:"char_set"`
-	QueuePath          string `mapstructure:"q_path"`
-	QueueWarnThreshold int    `mapstructure:"q_warn_threshold"`
+	ServerName     string `mapstructure:"server_name"`
+	KerioStorePath string `mapstructure:"keriostore_path"`
+	Sender         string `mapstructure:"sender"`
+	QueueCheck     struct {
+		RecipientList      []string `mapstructure:"recipient_list"`
+		SubjectT           string   `mapstructure:"subject_t"`
+		HTMLBodyT          string   `mapstructure:"html_body"`
+		TextBodyT          string   `mapstructure:"text_body"`
+		CharSet            string   `mapstructure:"char_set"`
+		QueuePath          string   `mapstructure:"q_path"`
+		QueueWarnThreshold int      `mapstructure:"q_warn_threshold"`
+	} `mapstructure:"q_check"`
 }
 
 /*
