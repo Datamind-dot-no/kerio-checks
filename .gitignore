@@ -15,7 +15,7 @@
 .DS_Store
 
 # Binaries for main executable
-kerio_checks
+kerio-checks
 
 # Do not publish out own test config to Git
 TestRoot/*
